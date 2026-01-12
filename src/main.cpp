@@ -2,6 +2,10 @@
 #include <SFML/Window.hpp>
 #include <iostream>
 
+// TEST FILE FOR MENU NAVIGATION USING KEYBOARD AND CONTROLLER, WILL DELETE LATER
+
+/* START OF IGNORE
+
 sf::View getLetterboxView(sf::View view, int winW, int winH)
 {
     float windowRatio = (float)winW / (float)winH;
@@ -46,10 +50,11 @@ int main()
         "SFML Game",
         sf::Style::Default);
 
+    window.setFramerateLimit(60);
+
     sf::View gameView(sf::FloatRect(0, 0, GAME_W, GAME_H));
     window.setView(gameView);
 
-    window.setFramerateLimit(60);
 
     auto recreateWindow = [&](bool fs)
     {
@@ -87,6 +92,14 @@ int main()
         return 1;
     }
 
+    // ---------- TITLE ----------
+    sf::Text title("TITLE EXAMPLE", font, 48);
+    title.setFillColor(sf::Color::White);
+
+    sf::FloatRect titleBounds = title.getLocalBounds();
+    title.setOrigin(titleBounds.width / 2.f, titleBounds.height / 2.f);
+    title.setPosition(400.f, 150.f);
+
     // ---- Text objects ----
     sf::Text playText("PLAY", font, 40);
     sf::Text exitText("EXIT", font, 40);
@@ -96,8 +109,8 @@ int main()
         "Sed do eiusmod tempor incididunt.",
         font, 28);
 
-    playText.setPosition(350, 220);
-    exitText.setPosition(350, 300);
+    playText.setPosition(200.f, 250.f);
+    exitText.setPosition(200.f, 300);
     loremText.setPosition(200, 200);
 
     MenuItem selected = PLAY;
@@ -206,6 +219,7 @@ int main()
         }
         else
         {
+            window.draw(title);
             window.draw(playText);
             window.draw(exitText);
         }
@@ -215,3 +229,5 @@ int main()
 
     return 0;
 }
+
+END OF THE IGNORE PART*/
