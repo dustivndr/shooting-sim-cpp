@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.20)
 project(shooting-sim-cpp LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -7,7 +7,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Windows SFML path
 if (WIN32)
     set(SFML_DIR "C:/SFML/lib/cmake/SFML")
+elseif (UNIX)
+    set(SFML_DIR "/usr/local/lib64/cmake/SFML")
 endif()
+
+set(SFML_STATIC_LIBRARIES ON)
 
 find_package(SFML 3 CONFIG REQUIRED COMPONENTS Graphics Window System)
 
