@@ -31,13 +31,3 @@ add_custom_command(TARGET shooting-sim-cpp POST_BUILD
         ${CMAKE_SOURCE_DIR}/assets
         $<TARGET_FILE_DIR:shooting-sim-cpp>/assets
 )
-
-# Windows DLLs
-if (WIN32)
-    add_custom_command(TARGET shooting-sim-cpp POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            $<TARGET_RUNTIME_DLLS:shooting-sim-cpp>
-            $<TARGET_FILE_DIR:shooting-sim-cpp>
-        COMMAND_EXPAND_LISTS
-    )
-endif()
