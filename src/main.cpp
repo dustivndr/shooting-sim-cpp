@@ -1,6 +1,32 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <iostream>
+#include <optional>
+
+int main()
+{
+    sf::RenderWindow window(
+        sf::VideoMode({800, 600}),
+        "SFML 3 Works"
+    );
+
+    while (window.isOpen())
+    {
+        while (auto event = window.pollEvent())
+        {
+            if (event->is<sf::Event::Closed>())
+            {
+                window.close();
+            }
+        }
+
+        window.clear(sf::Color::Black);
+        window.display();
+    }
+
+    return 0;
+}
+
 
 // TEST FILE FOR MENU NAVIGATION USING KEYBOARD AND CONTROLLER, WILL DELETE LATER
 
