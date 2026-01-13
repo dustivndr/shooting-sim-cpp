@@ -15,8 +15,12 @@ set(SFML_STATIC_LIBRARIES ON)
 
 find_package(SFML 3 CONFIG REQUIRED COMPONENTS Graphics Window System)
 
+file(GLOB_RECURSE GAME_SOURCES
+    src/*.cpp
+)
+
 add_executable(shooting-sim-cpp
-    src/main.cpp
+    ${GAME_SOURCES}
 )
 
 target_link_libraries(shooting-sim-cpp PRIVATE
