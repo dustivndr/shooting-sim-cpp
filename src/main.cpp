@@ -5,12 +5,9 @@
 
 // TEST CODE, GENERATED WITH AI
 
-// --------------------------------------------------
-// Letterbox helper
-// --------------------------------------------------
 sf::View getLetterboxView(sf::View view, int winW, int winH)
 {
-    float windowRatio = static_cast<float>(winW) / static_cast<float>(winH);
+    float windowRatio = (float)winW / (float)winH;
     float viewRatio = view.getSize().x / view.getSize().y;
 
     float sizeX = 1.f, sizeY = 1.f;
@@ -27,13 +24,10 @@ sf::View getLetterboxView(sf::View view, int winW, int winH)
         posY = (1.f - sizeY) / 2.f;
     }
 
-    view.setViewport(sf::FloatRect({posX, posY}, {sizeX, sizeY}));
+    view.setViewport({posX, posY, sizeX, sizeY});
     return view;
 }
 
-// --------------------------------------------------
-// Menu enum
-// --------------------------------------------------
 enum MenuItem
 {
     PLAY,
@@ -47,7 +41,7 @@ int main()
 
     bool fullscreen = false;
 
-    sf::VideoMode windowedMode({GAME_W, GAME_H});
+    sf::VideoMode windowedMode(GAME_W, GAME_H);
     sf::VideoMode fullscreenMode = sf::VideoMode::getDesktopMode();
 
     sf::RenderWindow window(
@@ -55,14 +49,12 @@ int main()
         "SFML Game",
         sf::Style::Default);
 
-    window.setVerticalSyncEnabled(true);
+    window.setFramerateLimit(60);
 
-    sf::View gameView(sf::FloatRect({0.f, 0.f}, {GAME_W, GAME_H}));
+    sf::View gameView(sf::FloatRect(0, 0, GAME_W, GAME_H));
     window.setView(gameView);
 
-    // --------------------------------------------------
-    // Window recreation (fullscreen toggle)
-    // --------------------------------------------------
+
     auto recreateWindow = [&](bool fs)
     {
         window.close();
@@ -72,18 +64,18 @@ int main()
             window.create(
                 fullscreenMode,
                 "SFML Game",
-                sf::State::Fullscreen);
+                sf::Style::Fullscreen);
         }
         else
         {
             window.create(
                 windowedMode,
                 "SFML Game",
-                sf::State::Windowed);
+                sf::Style::Default);
         }
 
         gameView = getLetterboxView(
-            sf::View(sf::FloatRect({0.f, 0.f}, {GAME_W, GAME_H})),
+            sf::View(sf::FloatRect(0, 0, GAME_W, GAME_H)),
             window.getSize().x,
             window.getSize().y);
 
@@ -91,90 +83,75 @@ int main()
         window.setVerticalSyncEnabled(true);
     };
 
+    // ---- Load font ----
     sf::Font font;
-    if (!font.openFromFile("assets/DejaVuSans-Bold.ttf"))
+    if (!font.loadFromFile("assets/vcr-osd-mono.ttf"))
     {
         std::cerr << "Failed to load font\n";
         return 1;
     }
 
-    sf::Text title(font);
-    title.setFont(font);
-    title.setString("TITLE EXAMPLE");
-    title.setCharacterSize(48);
+    // ---------- TITLE ----------
+    sf::Text title("TITLE EXAMPLE", font, 48);
     title.setFillColor(sf::Color::White);
 
-    auto titleBounds = title.getLocalBounds();
-    title.setOrigin({
-        titleBounds.size.x / 2.f,
-        titleBounds.size.y / 2.f
-    });
-    title.setPosition({400.f, 150.f});
+    sf::FloatRect titleBounds = title.getLocalBounds();
+    title.setOrigin(titleBounds.width / 2.f, titleBounds.height / 2.f);
+    title.setPosition(400.f, 150.f);
 
-    sf::Text playText(font);
-    playText.setFont(font);
-    playText.setString("PLAY");
-    playText.setCharacterSize(40);
-
-    sf::Text exitText(font);
-    exitText.setFont(font);
-    exitText.setString("EXIT");
-    exitText.setCharacterSize(40);
-
-    playText.setPosition({200.f, 250.f});
-    exitText.setPosition({200.f, 300.f});
-
-    sf::Text loremText(font);
-    loremText.setFont(font);
-    loremText.setCharacterSize(28);
-    loremText.setString(
+    // ---- Text objects ----
+    sf::Text playText("PLAY", font, 40);
+    sf::Text exitText("EXIT", font, 40);
+    sf::Text loremText(
         "Lorem ipsum dolor sit amet,\n"
         "consectetur adipiscing elit.\n"
-        "Sed do eiusmod tempor incididunt.");
-    loremText.setPosition({200.f, 200.f});
+        "Sed do eiusmod tempor incididunt.",
+        font, 28);
+
+    playText.setPosition(200.f, 250.f);
+    exitText.setPosition(200.f, 300);
+    loremText.setPosition(200, 200);
 
     MenuItem selected = PLAY;
     bool showLorem = false;
+
+    // Debounce flags
     bool dpadUsed = false;
 
-    // --------------------------------------------------
-    // Main loop
-    // --------------------------------------------------
+    // ---- MAIN LOOP ----
     while (window.isOpen())
     {
-        // ---------------- Events ----------------
-        while (auto event = window.pollEvent())
+        sf::Event event;
+        while (window.pollEvent(event))
         {
-            // Close
-            if (event->is<sf::Event::Closed>())
+            if (event.type == sf::Event::Closed)
                 window.close();
 
-            // Resize
-            if (const auto *resized = event->getIf<sf::Event::Resized>())
+            if (event.type == sf::Event::KeyPressed &&
+                event.key.code == sf::Keyboard::F11)
+            {
+                fullscreen = !fullscreen;
+                recreateWindow(fullscreen);
+            }
+
+            if (event.type == sf::Event::Resized)
             {
                 gameView = getLetterboxView(
                     gameView,
-                    resized->size.x,
-                    resized->size.y);
+                    event.size.width,
+                    event.size.height);
                 window.setView(gameView);
             }
 
-            // Keyboard input
-            if (const auto *key = event->getIf<sf::Event::KeyPressed>())
+            // ---- Keyboard navigation ----
+            if (event.type == sf::Event::KeyPressed)
             {
-                if (key->code == sf::Keyboard::Key::F11)
-                {
-                    fullscreen = !fullscreen;
-                    recreateWindow(fullscreen);
-                }
-
-                if (key->code == sf::Keyboard::Key::Up)
+                if (event.key.code == sf::Keyboard::Up)
                     selected = PLAY;
-
-                if (key->code == sf::Keyboard::Key::Down)
+                if (event.key.code == sf::Keyboard::Down)
                     selected = EXIT;
 
-                if (key->code == sf::Keyboard::Key::Enter)
+                if (event.key.code == sf::Keyboard::Enter)
                 {
                     if (selected == PLAY)
                         showLorem = true;
@@ -183,13 +160,19 @@ int main()
                 }
             }
 
-            // Joystick button
-            if (const auto *joy = event->getIf<sf::Event::JoystickButtonPressed>())
+            // ---- Controller button pressed (confirm) ----
+            if (event.type == sf::Event::JoystickButtonPressed)
             {
-                const unsigned X_BUTTON = 3;
+                std::cout << "Joystick button pressed: "
+                          << event.joystickButton.button << std::endl;
 
-                if (joy->joystickId == 0 && joy->button == X_BUTTON)
+                // Replace this number with YOUR X button index
+                const unsigned int X_BUTTON = 3;
+
+                if (event.joystickButton.joystickId == 0 &&
+                    event.joystickButton.button == X_BUTTON)
                 {
+
                     if (selected == PLAY)
                         showLorem = true;
                     else
@@ -198,12 +181,10 @@ int main()
             }
         }
 
-        // ---------------- D-Pad navigation ----------------
+        // ---- D-Pad navigation (real-time) ----
         if (sf::Joystick::isConnected(0))
         {
-            float povY = sf::Joystick::getAxisPosition(
-                0,
-                sf::Joystick::Axis::PovY);
+            float povY = sf::Joystick::getAxisPosition(0, sf::Joystick::PovY);
 
             if (!dpadUsed)
             {
@@ -223,12 +204,12 @@ int main()
                 dpadUsed = false;
         }
 
-        // ---------------- Visual state ----------------
+        // ---- Colors ----
         sf::Color inactive(120, 120, 120);
         playText.setFillColor(selected == PLAY ? sf::Color::White : inactive);
         exitText.setFillColor(selected == EXIT ? sf::Color::White : inactive);
 
-        // ---------------- Draw ----------------
+        // ---- Draw ----
         window.clear(sf::Color::Black);
 
         if (showLorem)
