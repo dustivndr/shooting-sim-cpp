@@ -24,6 +24,10 @@ add_executable(Cybershoot
     ${GAME_SOURCES}
 )
 
+target_include_directories(Cybershoot PRIVATE
+    src
+)
+
 target_link_libraries(Cybershoot
     sfml-system
     sfml-window
