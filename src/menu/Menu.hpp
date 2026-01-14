@@ -1,4 +1,5 @@
 #pragma once
+
 #include <SFML/Graphics.hpp>
 
 enum class MenuResult
@@ -15,30 +16,23 @@ class Menu
 public:
     Menu(sf::Font& font);
 
-    void handleEvent(const sf::Event& event);
-    void updateController();
+    void moveUp();
+    void moveDown();
+    void confirm();
+
     void draw(sf::RenderWindow& window);
 
     MenuResult getResult() const;
     void resetResult();
 
 private:
-    enum Item
-    {
-        PLAY,
-        PLAYER,
-        SETTINGS,
-        EXIT,
-        COUNT
-    };
+    void updateColors();
+
+    enum Item { PLAY, PLAYER, SETTINGS, EXIT, COUNT };
 
     Item selected = PLAY;
     MenuResult result = MenuResult::None;
 
     sf::Text title;
     sf::Text items[COUNT];
-
-    bool dpadUsed = false;
-
-    void updateColors();
 };

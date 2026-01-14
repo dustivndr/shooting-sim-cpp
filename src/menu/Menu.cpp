@@ -31,76 +31,32 @@ Menu::Menu(sf::Font& font)
     updateColors();
 }
 
-void Menu::handleEvent(const sf::Event& event)
+void Menu::moveUp()
 {
-    if (event.type == sf::Event::KeyPressed)
-    {
-        if (event.key.code == sf::Keyboard::Up && selected > 0)
-            selected = static_cast<Item>(selected - 1);
-
-        if (event.key.code == sf::Keyboard::Down && selected < COUNT - 1)
-            selected = static_cast<Item>(selected + 1);
-
-        if (event.key.code == sf::Keyboard::Enter)
-        {
-            switch (selected)
-            {
-            case PLAY:     result = MenuResult::Play; break;
-            case PLAYER:   result = MenuResult::Player; break;
-            case SETTINGS: result = MenuResult::Settings; break;
-            case EXIT:     result = MenuResult::Exit; break;
-            default: break;
-            }
-        }
-    }
-
-    // ---- Controller confirm ----
-    if (event.type == sf::Event::JoystickButtonPressed)
-    {
-        const unsigned X_BUTTON = 3;
-
-        if (event.joystickButton.joystickId == 0 &&
-            event.joystickButton.button == X_BUTTON)
-        {
-            switch (selected)
-            {
-            case PLAY:     result = MenuResult::Play; break;
-            case PLAYER:   result = MenuResult::Player; break;
-            case SETTINGS: result = MenuResult::Settings; break;
-            case EXIT:     result = MenuResult::Exit; break;
-            default: break;
-            }
-        }
-    }
+    if (selected > 0)
+        selected = static_cast<Item>(selected - 1);
 
     updateColors();
 }
 
-void Menu::updateController()
+void Menu::moveDown()
 {
-    if (!sf::Joystick::isConnected(0))
-        return;
-
-    float povY = sf::Joystick::getAxisPosition(0, sf::Joystick::PovY);
-
-    if (!dpadUsed)
-    {
-        if (povY > 50 && selected < COUNT - 1)
-        {
-            selected = static_cast<Item>(selected + 1);
-            dpadUsed = true;
-        }
-        else if (povY < -50 && selected > 0)
-        {
-            selected = static_cast<Item>(selected - 1);
-            dpadUsed = true;
-        }
-    }
-
-    if (povY > -20 && povY < 20)
-        dpadUsed = false;
+    if (selected < COUNT - 1)
+        selected = static_cast<Item>(selected + 1);
 
     updateColors();
+}
+
+void Menu::confirm()
+{
+    switch (selected)
+    {
+    case PLAY:     result = MenuResult::Play; break;
+    case PLAYER:   result = MenuResult::Player; break;
+    case SETTINGS: result = MenuResult::Settings; break;
+    case EXIT:     result = MenuResult::Exit; break;
+    default: break;
+    }
 }
 
 void Menu::draw(sf::RenderWindow& window)
@@ -115,8 +71,11 @@ void Menu::updateColors()
     sf::Color inactive(120, 120, 120);
 
     for (int i = 0; i < COUNT; ++i)
+    {
         items[i].setFillColor(
-            i == selected ? sf::Color::White : inactive);
+            i == selected ? sf::Color::White : inactive
+        );
+    }
 }
 
 MenuResult Menu::getResult() const

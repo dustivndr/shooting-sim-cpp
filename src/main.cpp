@@ -1,9 +1,10 @@
-#include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
-
 #include <iostream>
 #include <optional>
 
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
+
+#include "input/ControllerManager.hpp"
 #include "menu/Menu.hpp"
 
 sf::View getLetterboxView(sf::View view, int winW, int winH)
@@ -79,8 +80,12 @@ int main()
 
     sf::Font font;
     if (!font.loadFromFile("assets/vcr-osd-mono.ttf"))
+    {
+        std::cerr << "Failed to load font!" << std::endl;
         return 1;
+    }
 
+    ControllerManager controller;
     Menu menu(font);
 
     while (window.isOpen())
@@ -90,20 +95,18 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-
-            menu.handleEvent(event);
         }
 
-        menu.updateController();
+        controller.update();
 
-        if (menu.getResult() == MenuResult::Exit)
-            window.close();
+        if (controller.menuUpPressed())
+            menu.moveUp();
 
-        if (menu.getResult() == MenuResult::Play)
-        {
-            std::cout << "Start game\n";
-            menu.resetResult();
-        }
+        if (controller.menuDownPressed())
+            menu.moveDown();
+
+        if (controller.menuConfirmPressed())
+            menu.confirm();
 
         window.clear(sf::Color::Black);
         menu.draw(window);
