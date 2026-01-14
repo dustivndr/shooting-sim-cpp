@@ -1,9 +1,10 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
+
 #include <iostream>
 #include <optional>
 
-// TEST CODE, GENERATED WITH AI
+#include "menu/Menu.hpp"
 
 sf::View getLetterboxView(sf::View view, int winW, int winH)
 {
@@ -28,12 +29,6 @@ sf::View getLetterboxView(sf::View view, int winW, int winH)
     return view;
 }
 
-enum MenuItem
-{
-    PLAY,
-    EXIT
-};
-
 int main()
 {
     constexpr unsigned GAME_W = 800;
@@ -46,14 +41,13 @@ int main()
 
     sf::RenderWindow window(
         windowedMode,
-        "SFML Game",
+        "Cybershoot",
         sf::Style::Default);
 
     window.setFramerateLimit(60);
 
     sf::View gameView(sf::FloatRect(0, 0, GAME_W, GAME_H));
     window.setView(gameView);
-
 
     auto recreateWindow = [&](bool fs)
     {
@@ -63,19 +57,19 @@ int main()
         {
             window.create(
                 fullscreenMode,
-                "SFML Game",
+                "Cybershoot",
                 sf::Style::Fullscreen);
         }
         else
         {
             window.create(
                 windowedMode,
-                "SFML Game",
+                "Cybershoot",
                 sf::Style::Default);
         }
 
         gameView = getLetterboxView(
-            sf::View(sf::FloatRect(0, 0, GAME_W, GAME_H)),
+            sf::View(sf::FloatRect(0.f, 0.f, GAME_W, GAME_H)),
             window.getSize().x,
             window.getSize().y);
 
@@ -83,42 +77,12 @@ int main()
         window.setVerticalSyncEnabled(true);
     };
 
-    // ---- Load font ----
     sf::Font font;
     if (!font.loadFromFile("assets/vcr-osd-mono.ttf"))
-    {
-        std::cerr << "Failed to load font\n";
         return 1;
-    }
 
-    // ---------- TITLE ----------
-    sf::Text title("TITLE EXAMPLE", font, 48);
-    title.setFillColor(sf::Color::White);
+    Menu menu(font);
 
-    sf::FloatRect titleBounds = title.getLocalBounds();
-    title.setOrigin(titleBounds.width / 2.f, titleBounds.height / 2.f);
-    title.setPosition(400.f, 150.f);
-
-    // ---- Text objects ----
-    sf::Text playText("PLAY", font, 40);
-    sf::Text exitText("EXIT", font, 40);
-    sf::Text loremText(
-        "Lorem ipsum dolor sit amet,\n"
-        "consectetur adipiscing elit.\n"
-        "Sed do eiusmod tempor incididunt.",
-        font, 28);
-
-    playText.setPosition(200.f, 250.f);
-    exitText.setPosition(200.f, 300);
-    loremText.setPosition(200, 200);
-
-    MenuItem selected = PLAY;
-    bool showLorem = false;
-
-    // Debounce flags
-    bool dpadUsed = false;
-
-    // ---- MAIN LOOP ----
     while (window.isOpen())
     {
         sf::Event event;
@@ -127,104 +91,22 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
 
-            if (event.type == sf::Event::KeyPressed &&
-                event.key.code == sf::Keyboard::F11)
-            {
-                fullscreen = !fullscreen;
-                recreateWindow(fullscreen);
-            }
-
-            if (event.type == sf::Event::Resized)
-            {
-                gameView = getLetterboxView(
-                    gameView,
-                    event.size.width,
-                    event.size.height);
-                window.setView(gameView);
-            }
-
-            // ---- Keyboard navigation ----
-            if (event.type == sf::Event::KeyPressed)
-            {
-                if (event.key.code == sf::Keyboard::Up)
-                    selected = PLAY;
-                if (event.key.code == sf::Keyboard::Down)
-                    selected = EXIT;
-
-                if (event.key.code == sf::Keyboard::Enter)
-                {
-                    if (selected == PLAY)
-                        showLorem = true;
-                    else
-                        return 0;
-                }
-            }
-
-            // ---- Controller button pressed (confirm) ----
-            if (event.type == sf::Event::JoystickButtonPressed)
-            {
-                std::cout << "Joystick button pressed: "
-                          << event.joystickButton.button << std::endl;
-
-                // Replace this number with YOUR X button index
-                const unsigned int X_BUTTON = 3;
-
-                if (event.joystickButton.joystickId == 0 &&
-                    event.joystickButton.button == X_BUTTON)
-                {
-
-                    if (selected == PLAY)
-                        showLorem = true;
-                    else
-                        return 0;
-                }
-            }
+            menu.handleEvent(event);
         }
 
-        // ---- D-Pad navigation (real-time) ----
-        if (sf::Joystick::isConnected(0))
+        menu.updateController();
+
+        if (menu.getResult() == MenuResult::Exit)
+            window.close();
+
+        if (menu.getResult() == MenuResult::Play)
         {
-            float povY = sf::Joystick::getAxisPosition(0, sf::Joystick::PovY);
-
-            if (!dpadUsed)
-            {
-                if (povY > 50)
-                {
-                    selected = EXIT;
-                    dpadUsed = true;
-                }
-                else if (povY < -50)
-                {
-                    selected = PLAY;
-                    dpadUsed = true;
-                }
-            }
-
-            if (povY > -20 && povY < 20)
-                dpadUsed = false;
+            std::cout << "Start game\n";
+            menu.resetResult();
         }
 
-        // ---- Colors ----
-        sf::Color inactive(120, 120, 120);
-        playText.setFillColor(selected == PLAY ? sf::Color::White : inactive);
-        exitText.setFillColor(selected == EXIT ? sf::Color::White : inactive);
-
-        // ---- Draw ----
         window.clear(sf::Color::Black);
-
-        if (showLorem)
-        {
-            window.draw(loremText);
-        }
-        else
-        {
-            window.draw(title);
-            window.draw(playText);
-            window.draw(exitText);
-        }
-
+        menu.draw(window);
         window.display();
     }
-
-    return 0;
 }
