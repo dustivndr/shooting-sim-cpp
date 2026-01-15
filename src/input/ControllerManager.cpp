@@ -70,13 +70,8 @@ void ControllerManager::update()
         }
 
         // Confirm X
-        #ifdef __WIN32
-        if (sf::Joystick::isButtonPressed(id, 2)) // X
-            confirmNow = true;
-        #else
         if (sf::Joystick::isButtonPressed(id, 3)) // X
             confirmNow = true;
-        #endif
 
         // DEBUG: Print all pressed buttons
         for (unsigned i = 0; i < sf::Joystick::getButtonCount(id); ++i)
