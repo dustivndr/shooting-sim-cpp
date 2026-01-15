@@ -31,12 +31,14 @@ void ControllerManager::update()
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
         confirmNow = true;
 
-    // Read LSB
+    // Read Controller
     if (sf::Joystick::isConnected(id))
     {
         float rawY = sf::Joystick::getAxisPosition(id, sf::Joystick::Y);
 
-        rawY = -rawY;
+        float leftY = normalizeAxis(rawY, deadzone);
+
+        // rawY = -rawY;
 
         leftY = normalizeAxis(rawY, deadzone);
 
@@ -63,7 +65,7 @@ void ControllerManager::update()
         }
 
         // Confirm X
-        if (sf::Joystick::isButtonPressed(id, 3)) // X
+        if (sf::Joystick::isButtonPressed(id, 2)) // X
             confirmNow = true;
     }
 

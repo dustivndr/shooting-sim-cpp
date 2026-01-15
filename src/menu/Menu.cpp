@@ -1,6 +1,8 @@
+#include <iostream>
+
 #include "Menu.hpp"
 
-Menu::Menu(sf::Font& font)
+Menu::Menu(sf::Font &font)
 {
     // ---- Title ----
     title.setFont(font);
@@ -13,12 +15,11 @@ Menu::Menu(sf::Font& font)
     title.setPosition(400.f, 150.f);
 
     // ---- Menu items ----
-    const char* labels[COUNT] = {
+    const char *labels[COUNT] = {
         "PLAY",
         "PLAYER",
         "SETTINGS",
-        "EXIT"
-    };
+        "EXIT"};
 
     for (int i = 0; i < COUNT; ++i)
     {
@@ -51,15 +52,28 @@ void Menu::confirm()
 {
     switch (selected)
     {
-    case PLAY:     result = MenuResult::Play; break;
-    case PLAYER:   result = MenuResult::Player; break;
-    case SETTINGS: result = MenuResult::Settings; break;
-    case EXIT:     result = MenuResult::Exit; break;
-    default: break;
+    case PLAY:
+        result = MenuResult::Play;
+        std::cout << "Play selected\n";
+        break;
+    case PLAYER:
+        result = MenuResult::Player;
+        std::cout << "Player selected\n";
+        break;
+    case SETTINGS:
+        result = MenuResult::Settings;
+        std::cout << "Settings selected\n";
+        break;
+    case EXIT:
+        result = MenuResult::Exit;
+        std::cout << "Exit selected\n";
+        break;
+    default:
+        break;
     }
 }
 
-void Menu::draw(sf::RenderWindow& window)
+void Menu::draw(sf::RenderWindow &window)
 {
     window.draw(title);
     for (int i = 0; i < COUNT; ++i)
@@ -73,8 +87,7 @@ void Menu::updateColors()
     for (int i = 0; i < COUNT; ++i)
     {
         items[i].setFillColor(
-            i == selected ? sf::Color::White : inactive
-        );
+            i == selected ? sf::Color::White : inactive);
     }
 }
 
