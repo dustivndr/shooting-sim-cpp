@@ -1,3 +1,4 @@
+#include <iostream>
 #include <cmath>
 
 #include "ControllerManager.hpp"
@@ -34,13 +35,14 @@ void ControllerManager::update()
     // Read Controller
     if (sf::Joystick::isConnected(id))
     {
-        float rawY = sf::Joystick::getAxisPosition(id, sf::Joystick::Y);
+        // float rawY = sf::Joystick::getAxisPosition(id, sf::Joystick::Y);
 
-        float leftY = normalizeAxis(rawY, deadzone);
+        // float leftY = normalizeAxis(rawY, deadzone);
 
-        // rawY = -rawY;
-
-        leftY = normalizeAxis(rawY, deadzone);
+        float leftY = normalizeAxis(
+            sf::Joystick::getAxisPosition(id, sf::Joystick::Y),
+            deadzone
+        );
 
         if (leftY < -menuThreshold)
             menuUpNow = true;
@@ -50,23 +52,40 @@ void ControllerManager::update()
         if (sf::Joystick::hasAxis(id, sf::Joystick::PovY))
         {
             float povY = sf::Joystick::getAxisPosition(id, sf::Joystick::PovY);
+            
+            #ifdef __linux__
+            povY = -povY; // Invert POV Y on Linux
+            #endif
 
             if (povY > 50)
                 menuUpNow = true;
             if (povY < -50)
                 menuDownNow = true;
-        }
-        else
-        {
-            if (sf::Joystick::isButtonPressed(id, 11))
-                menuUpNow = true;
-            if (sf::Joystick::isButtonPressed(id, 12))
-                menuDownNow = true;
+            
+            // inverted
+            // if (povY < -50)
+            //     menuUpNow = true;
+            // if (povY > 50)
+            //     menuDownNow = true;
         }
 
         // Confirm X
+        #ifdef __WIN32
         if (sf::Joystick::isButtonPressed(id, 2)) // X
             confirmNow = true;
+        #else
+        if (sf::Joystick::isButtonPressed(id, 3)) // X
+            confirmNow = true;
+        #endif
+
+        // DEBUG: Print all pressed buttons
+        for (unsigned i = 0; i < sf::Joystick::getButtonCount(id); ++i)
+        {
+            if (sf::Joystick::isButtonPressed(id, i))
+            {
+                std::cout << "Joystick button " << i << " pressed\n";
+            }
+        }
     }
 
     // Current logical menu states
