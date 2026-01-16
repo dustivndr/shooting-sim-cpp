@@ -7,8 +7,8 @@ Menu::Menu(sf::Font &font)
     // ---- Title ----
     title.setFont(font);
     title.setString("Cybershoot");
-    title.setCharacterSize(48);
-    title.setFillColor(sf::Color::White);
+    title.setCharacterSize(50);
+    title.setFillColor(sf::Color(57, 255, 20));
 
     auto bounds = title.getLocalBounds();
     title.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
@@ -73,23 +73,49 @@ void Menu::confirm()
     }
 }
 
-void Menu::draw(sf::RenderWindow &window)
+void Menu::draw(sf::RenderWindow& window)
 {
+    for (int g = 0; g < 2; ++g)
+    {
+        sf::Text glow = title;
+        glow.setFillColor(sf::Color(57, 255, 20, 60 - g * 20));
+        glow.setScale(1.f + g * 0.04f, 1.f + g * 0.04f);
+        window.draw(glow);
+    }
+
     window.draw(title);
+
     for (int i = 0; i < COUNT; ++i)
+    {
+        if (i == selected)
+        {
+            for (int g = 0; g < 3; ++g)
+            {
+                sf::Text glow = items[i];
+                glow.setFillColor(sf::Color(57, 255, 20, 90 - g * 25));
+                glow.setScale(1.f + g * 0.06f, 1.f + g * 0.06f);
+                window.draw(glow);
+            }
+        }
+
+        // Menu item
         window.draw(items[i]);
+    }
 }
 
 void Menu::updateColors()
 {
-    sf::Color inactive(120, 120, 120);
+    sf::Color inactive(30, 160, 20);
+    sf::Color active(57, 255, 20);
 
     for (int i = 0; i < COUNT; ++i)
     {
         items[i].setFillColor(
-            i == selected ? sf::Color::White : inactive);
+            i == selected ? active : inactive);
     }
 }
+
+
 
 MenuResult Menu::getResult() const
 {
