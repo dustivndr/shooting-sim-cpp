@@ -115,8 +115,6 @@ void Menu::updateColors()
     }
 }
 
-
-
 MenuResult Menu::getResult() const
 {
     return result;

@@ -95,6 +95,9 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
+
+            if (menu.getResult() == MenuResult::Exit)
+                window.close();
         }
 
         controller.update();
