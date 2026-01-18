@@ -5,29 +5,7 @@
 
 #include "input/ControllerManager.hpp"
 #include "menu/Menu.hpp"
-
-sf::View getLetterboxView(sf::View view, int winW, int winH)
-{
-    float windowRatio = (float)winW / (float)winH;
-    float viewRatio = view.getSize().x / view.getSize().y;
-
-    float sizeX = 1.f, sizeY = 1.f;
-    float posX = 0.f, posY = 0.f;
-
-    if (windowRatio > viewRatio)
-    {
-        sizeX = viewRatio / windowRatio;
-        posX = (1.f - sizeX) / 2.f;
-    }
-    else
-    {
-        sizeY = windowRatio / viewRatio;
-        posY = (1.f - sizeY) / 2.f;
-    }
-
-    view.setViewport({posX, posY, sizeX, sizeY});
-    return view;
-}
+#include "graphics/ViewManager.hpp"
 
 int main()
 {
@@ -45,13 +23,9 @@ int main()
         sf::Style::Titlebar | sf::Style::Close
     );
 
-    sf::View gameView = getLetterboxView(
-        sf::View(sf::FloatRect(0.f, 0.f, GAME_W, GAME_H)),
-        window.getSize().x,
-        window.getSize().y
-    );
+    ViewManager viewManager(GAME_W, GAME_H);
+    viewManager.update(window.getSize());
 
-    window.setView(gameView);
     window.setFramerateLimit(60);
 
     auto recreateWindow = [&](bool fs)
@@ -75,19 +49,14 @@ int main()
             );
         }
 
-        gameView = getLetterboxView(
-            sf::View(sf::FloatRect(0.f, 0.f, GAME_W, GAME_H)),
-            window.getSize().x,
-            window.getSize().y);
-
-        window.setView(gameView);
+        viewManager.update(window.getSize());
         window.setVerticalSyncEnabled(true);
     };
 
     sf::Font font;
     if (!font.loadFromFile("assets/vcr-osd-mono.ttf"))
     {
-        std::cerr << "Failed to load font!" << std::endl;
+        std::cerr << "Failed to load font!\n";
         return 1;
     }
 
@@ -108,13 +77,11 @@ int main()
                 menu.resetResult();
             }
 
-            if (event.type == sf::Event::KeyPressed)
+            if (event.type == sf::Event::KeyPressed &&
+                event.key.code == sf::Keyboard::F11)
             {
-                if (event.key.code == sf::Keyboard::F11)
-                {
-                    fullscreen = !fullscreen;
-                    recreateWindow(fullscreen); 
-                }
+                fullscreen = !fullscreen;
+                recreateWindow(fullscreen);
             }
         }
 
@@ -130,8 +97,10 @@ int main()
             menu.confirm();
 
         window.clear(sf::Color::Black);
-        window.setView(gameView);
+        viewManager.apply(window);
         menu.draw(window);
         window.display();
     }
+
+    return 0;
 }
