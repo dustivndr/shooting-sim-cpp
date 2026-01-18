@@ -1,5 +1,4 @@
 #include <iostream>
-#include <optional>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
@@ -43,12 +42,17 @@ int main()
     sf::RenderWindow window(
         windowedMode,
         "Cybershoot",
-        sf::Style::Default);
+        sf::Style::Titlebar | sf::Style::Close
+    );
 
-    window.setFramerateLimit(60);
+    sf::View gameView = getLetterboxView(
+        sf::View(sf::FloatRect(0.f, 0.f, GAME_W, GAME_H)),
+        window.getSize().x,
+        window.getSize().y
+    );
 
-    sf::View gameView(sf::FloatRect(0, 0, GAME_W, GAME_H));
     window.setView(gameView);
+    window.setFramerateLimit(60);
 
     auto recreateWindow = [&](bool fs)
     {
@@ -59,14 +63,16 @@ int main()
             window.create(
                 fullscreenMode,
                 "Cybershoot",
-                sf::Style::Fullscreen);
+                sf::Style::Fullscreen
+            );
         }
         else
         {
             window.create(
                 windowedMode,
                 "Cybershoot",
-                sf::Style::Default);
+                sf::Style::Titlebar | sf::Style::Close
+            );
         }
 
         gameView = getLetterboxView(
@@ -97,7 +103,19 @@ int main()
                 window.close();
 
             if (menu.getResult() == MenuResult::Exit)
+            {
                 window.close();
+                menu.resetResult();
+            }
+
+            if (event.type == sf::Event::KeyPressed)
+            {
+                if (event.key.code == sf::Keyboard::F11)
+                {
+                    fullscreen = !fullscreen;
+                    recreateWindow(fullscreen); 
+                }
+            }
         }
 
         controller.update();
@@ -112,6 +130,7 @@ int main()
             menu.confirm();
 
         window.clear(sf::Color::Black);
+        window.setView(gameView);
         menu.draw(window);
         window.display();
     }
