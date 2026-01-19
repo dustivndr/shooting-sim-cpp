@@ -1,11 +1,10 @@
 #include <iostream>
 
 #include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
 
-#include "input/ControllerManager.hpp"
-#include "menu/Menu.hpp"
 #include "graphics/ViewManager.hpp"
+#include "scene/SceneManager.hpp"
+#include "scene/MenuScene.hpp"
 
 int main()
 {
@@ -32,22 +31,12 @@ int main()
     {
         window.close();
 
-        if (fs)
-        {
-            window.create(
-                fullscreenMode,
-                "Cybershoot",
-                sf::Style::Fullscreen
-            );
-        }
-        else
-        {
-            window.create(
-                windowedMode,
-                "Cybershoot",
-                sf::Style::Titlebar | sf::Style::Close
-            );
-        }
+        window.create(
+            fs ? fullscreenMode : windowedMode,
+            "Cybershoot",
+            fs ? sf::Style::Fullscreen
+               : (sf::Style::Titlebar | sf::Style::Close)
+        );
 
         viewManager.update(window.getSize());
         window.setVerticalSyncEnabled(true);
@@ -60,8 +49,8 @@ int main()
         return 1;
     }
 
-    ControllerManager controller;
-    Menu menu(font);
+    SceneManager sceneManager;
+    sceneManager.setScene(std::make_unique<MenuScene>(font));
 
     while (window.isOpen())
     {
@@ -71,34 +60,34 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
 
-            if (menu.getResult() == MenuResult::Exit)
-            {
-                window.close();
-                menu.resetResult();
-            }
-
             if (event.type == sf::Event::KeyPressed &&
                 event.key.code == sf::Keyboard::F11)
             {
                 fullscreen = !fullscreen;
                 recreateWindow(fullscreen);
             }
+
+            if (sceneManager.getCurrent())
+                sceneManager.getCurrent()->handleEvent(event);
         }
 
-        controller.update();
-
-        if (controller.menuUpPressed())
-            menu.moveUp();
-
-        if (controller.menuDownPressed())
-            menu.moveDown();
-
-        if (controller.menuConfirmPressed())
-            menu.confirm();
+        if (sceneManager.getCurrent())
+        {
+            sceneManager.getCurrent()->update();
+            
+            if (auto menuScene = dynamic_cast<MenuScene*>(sceneManager.getCurrent()))
+            {
+                if (menuScene->getResult() == MenuResult::Exit)
+                    window.close();
+            }
+        }
 
         window.clear(sf::Color::Black);
         viewManager.apply(window);
-        menu.draw(window);
+       
+        if (sceneManager.getCurrent())
+            sceneManager.getCurrent()->draw(window);
+
         window.display();
     }
 
