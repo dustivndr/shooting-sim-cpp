@@ -106,10 +106,10 @@ bool ControllerManager::menuConfirmPressed()
     return confirmNow && !confirmPrev;
 }
 
-// bool ControllerManager::menuBackPressed()
-// {
-//     return backNow && !backPrev;
-// }
+bool ControllerManager::menuBackPressed()
+{
+    return backNow && !backPrev;
+}
 
 // float ControllerManager::moveForward() const
 // {

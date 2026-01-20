@@ -12,7 +12,7 @@ public:
     bool menuUpPressed();
     bool menuDownPressed();
     bool menuConfirmPressed();
-    // bool menuBackPressed();
+    bool menuBackPressed();
 
     // Continuous (for gameplay)
     float moveForward() const;
