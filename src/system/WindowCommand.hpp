@@ -1,25 +1,23 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
-
-#include "system/DisplayMode.hpp"
-
-struct WindowCommand
-{
-    bool requested = false;
-    DisplayMode mode = DisplayMode::Windowed;
-};
+#include "graphics/ViewManager.hpp"
 
 class WindowCommand
 {
 public:
-    WindowCommand(sf::RenderWindow& window);
+    WindowCommand(sf::RenderWindow& window, ViewManager& viewManager);
 
     void setWindowed();
     void setFullscreen();
     void setBorderless();
 
 private:
+    void recreate(sf::VideoMode mode, sf::Uint32 style);
+
+private:
     sf::RenderWindow& window;
-    sf::VideoMode desktop;
+    ViewManager& viewManager;
+
+    sf::VideoMode windowedMode;
+    sf::VideoMode desktopMode;
 };

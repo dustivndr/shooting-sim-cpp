@@ -1,56 +1,40 @@
-#include <iostream>
-
 #include <SFML/Graphics.hpp>
 
-#include "graphics/ViewManager.hpp"
 #include "scene/SceneManager.hpp"
-#include "scene/MenuScene.hpp"
+#include "scene/MainMenuScene.hpp"
+#include "input/ControllerManager.hpp"
+#include "system/WindowCommand.hpp"
 
 int main()
 {
-    constexpr unsigned GAME_W = 800;
-    constexpr unsigned GAME_H = 600;
-
-    bool fullscreen = false;
-
-    sf::VideoMode windowedMode(GAME_W, GAME_H);
-    sf::VideoMode fullscreenMode = sf::VideoMode::getDesktopMode();
-
     sf::RenderWindow window(
-        windowedMode,
+        sf::VideoMode(800, 600),
         "Cybershoot",
-        sf::Style::Titlebar | sf::Style::Close
-    );
-
-    ViewManager viewManager(GAME_W, GAME_H);
-    viewManager.update(window.getSize());
+        sf::Style::Titlebar | sf::Style::Close);
 
     window.setFramerateLimit(60);
-
-    auto recreateWindow = [&](bool fs)
-    {
-        window.close();
-
-        window.create(
-            fs ? fullscreenMode : windowedMode,
-            "Cybershoot",
-            fs ? sf::Style::Fullscreen
-               : (sf::Style::Titlebar | sf::Style::Close)
-        );
-
-        viewManager.update(window.getSize());
-        window.setVerticalSyncEnabled(true);
-    };
 
     sf::Font font;
     if (!font.loadFromFile("assets/vcr-osd-mono.ttf"))
     {
-        std::cerr << "Failed to load font!\n";
         return 1;
     }
 
+    ControllerManager controller;
+    ViewManager viewManager(800, 600);
+    WindowCommand windowCommand(window, viewManager);
+
     SceneManager sceneManager;
-    sceneManager.setScene(std::make_unique<MenuScene>(font));
+
+    sceneManager.changeScene(
+        std::make_unique<MainMenuScene>(
+            window,
+            font,
+            sceneManager,
+            windowCommand,
+            controller
+        )
+    );
 
     while (window.isOpen())
     {
@@ -60,34 +44,13 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
 
-            if (event.type == sf::Event::KeyPressed &&
-                event.key.code == sf::Keyboard::F11)
-            {
-                fullscreen = !fullscreen;
-                recreateWindow(fullscreen);
-            }
-
-            if (sceneManager.getCurrent())
-                sceneManager.getCurrent()->handleEvent(event);
+            sceneManager.handleEvent(event);
         }
 
-        if (sceneManager.getCurrent())
-        {
-            sceneManager.getCurrent()->update();
-            
-            if (auto menuScene = dynamic_cast<MenuScene*>(sceneManager.getCurrent()))
-            {
-                if (menuScene->getResult() == MenuResult::Exit)
-                    window.close();
-            }
-        }
+        sceneManager.update();
 
         window.clear(sf::Color::Black);
-        viewManager.apply(window);
-       
-        if (sceneManager.getCurrent())
-            sceneManager.getCurrent()->draw(window);
-
+        sceneManager.render(window);
         window.display();
     }
 
