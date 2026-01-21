@@ -44,6 +44,15 @@ void MainMenuScene::handleEvent(const sf::Event& event)
 void MainMenuScene::update()
 {
     controller.update();
+
+    // Controller navigation
+    if (controller.menuUpPressed())
+        menu.moveUp();
+    if (controller.menuDownPressed())
+        menu.moveDown();
+    if (controller.menuConfirmPressed())
+        menu.confirm();
+
     switch (menu.getResult())
     {
     case MainMenuResult::Play:

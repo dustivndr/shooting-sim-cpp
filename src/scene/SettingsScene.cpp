@@ -57,6 +57,26 @@ void SettingsScene::update()
 {
     controller.update();
 
+    // Controller navigation
+    if (controller.menuUpPressed())
+        menu.moveUp();
+    if (controller.menuDownPressed())
+        menu.moveDown();
+    if (controller.menuConfirmPressed())
+        menu.confirm();
+    if (controller.menuBackPressed()) {
+        sceneManager.changeScene(
+            std::make_unique<MainMenuScene>(
+                window,
+                font,
+                sceneManager,
+                windowCommand,
+                controller
+            )
+        );
+        return;
+    }
+
     switch (menu.getResult())
     {
         case SettingsMenuResult::Windowed:
