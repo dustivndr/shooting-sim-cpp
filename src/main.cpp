@@ -12,6 +12,9 @@ int main()
         "Cybershoot",
         sf::Style::Titlebar | sf::Style::Close);
 
+    // Disable OS key repeat to ensure only one KeyPressed per physical press
+    window.setKeyRepeatEnabled(false);
+
     window.setFramerateLimit(60);
 
     sf::Font font;

@@ -32,4 +32,9 @@ private:
     ControllerManager& controller;
 
     MainMenu menu;
+
+    // Track which keys are currently pressed to prevent repeated triggers
+    bool keyUpPressed = false;
+    bool keyDownPressed = false;
+    bool keyEnterPressed = false;
 };

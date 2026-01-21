@@ -19,37 +19,77 @@ SettingsScene::SettingsScene(
 
 void SettingsScene::handleEvent(const sf::Event& event)
 {
-    if (event.type != sf::Event::KeyPressed)
-        return;
-
-    switch (event.key.code)
+    if (event.type == sf::Event::KeyPressed)
     {
-        case sf::Keyboard::Up:
-            menu.moveUp();
-            break;
+        switch (event.key.code)
+        {
+            case sf::Keyboard::Up:
+                if (!keyUpPressed)
+                {
+                    menu.moveUp();
+                    keyUpPressed = true;
+                }
+                break;
 
-        case sf::Keyboard::Down:
-            menu.moveDown();
-            break;
+            case sf::Keyboard::Down:
+                if (!keyDownPressed)
+                {
+                    menu.moveDown();
+                    keyDownPressed = true;
+                }
+                break;
 
-        case sf::Keyboard::Enter:
-            menu.confirm();
-            break;
+            case sf::Keyboard::Enter:
+                if (!keyEnterPressed)
+                {
+                    menu.confirm();
+                    keyEnterPressed = true;
+                }
+                break;
 
-        case sf::Keyboard::Escape:
-            sceneManager.changeScene(
-                std::make_unique<MainMenuScene>(
-                    window,
-                    font,
-                    sceneManager,
-                    windowCommand,
-                    controller
-                )
-            );
-            break;
+            case sf::Keyboard::Escape:
+                if (!keyEscapePressed)
+                {
+                    sceneManager.changeScene(
+                        std::make_unique<MainMenuScene>(
+                            window,
+                            font,
+                            sceneManager,
+                            windowCommand,
+                            controller
+                        )
+                    );
+                    keyEscapePressed = true;
+                }
+                break;
 
-        default:
-            break;
+            default:
+                break;
+        }
+    }
+    else if (event.type == sf::Event::KeyReleased)
+    {
+        switch (event.key.code)
+        {
+            case sf::Keyboard::Up:
+                keyUpPressed = false;
+                break;
+
+            case sf::Keyboard::Down:
+                keyDownPressed = false;
+                break;
+
+            case sf::Keyboard::Enter:
+                keyEnterPressed = false;
+                break;
+
+            case sf::Keyboard::Escape:
+                keyEscapePressed = false;
+                break;
+
+            default:
+                break;
+        }
     }
 }
 

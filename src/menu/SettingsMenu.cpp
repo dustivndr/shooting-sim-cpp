@@ -28,7 +28,7 @@ void SettingsMenu::confirm()
         case 1: result = SettingsMenuResult::Fullscreen; break;
         case 2: result = SettingsMenuResult::Borderless; break;
         case 3: result = SettingsMenuResult::Back; break;
-        //default: result = SettingsMenuResult::None; break;
+        default: result = SettingsMenuResult::None; break;
     }
 }
 
