@@ -2,18 +2,18 @@
 #include "scene/MainMenuScene.hpp"
 
 SettingsScene::SettingsScene(
-    sf::RenderWindow& window_,
-    sf::Font& font_,
-    SceneManager& sceneManager_,
-    WindowCommand& windowCommand_,
-    ControllerManager& controller_
+    sf::RenderWindow& window,
+    sf::Font& font,
+    SceneManager& sceneManager,
+    WindowCommand& windowCommand,
+    ControllerManager& controller
 )
-    : window(window_)
-    , font(font_)
-    , sceneManager(sceneManager_)
-    , windowCommand(windowCommand_)
-    , controller(controller_)
-    , menu(font_)
+: window(window)
+, font(font)
+, sceneManager(sceneManager)
+, windowCommand(windowCommand)
+, controller(controller)
+, menu(font)
 {
 }
 
@@ -57,29 +57,6 @@ void SettingsScene::update()
 {
     controller.update();
 
-    if (controller.menuUpPressed())
-        menu.moveUp();
-
-    if (controller.menuDownPressed())
-        menu.moveDown();
-
-    if (controller.menuConfirmPressed())
-        menu.confirm();
-
-    if (controller.menuBackPressed())
-    {
-        sceneManager.changeScene(
-            std::make_unique<MainMenuScene>(
-                window,
-                font,
-                sceneManager,
-                windowCommand,
-                controller
-            )
-        );
-        return;
-    }
-
     switch (menu.getResult())
     {
         case SettingsMenuResult::Windowed:
@@ -116,5 +93,7 @@ void SettingsScene::update()
 
 void SettingsScene::render(sf::RenderWindow& window)
 {
+    window.setView(window.getDefaultView());
+    menu.updateLayout(window.getView());
     menu.draw(window);
 }

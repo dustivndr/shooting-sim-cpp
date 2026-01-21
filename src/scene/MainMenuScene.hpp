@@ -17,7 +17,7 @@ public:
         sf::Font& font,
         SceneManager& sceneManager,
         WindowCommand& windowCommand,
-        ControllerManager& controllerManager
+        ControllerManager& controller
     );
 
     void handleEvent(const sf::Event& event) override;
@@ -29,7 +29,7 @@ private:
     sf::Font& font;
     SceneManager& sceneManager;
     WindowCommand& windowCommand;
-    ControllerManager& controllerManager;
+    ControllerManager& controller;
 
     MainMenu menu;
 };

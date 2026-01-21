@@ -6,32 +6,44 @@ MainMenuScene::MainMenuScene(
     sf::Font& font,
     SceneManager& sceneManager,
     WindowCommand& windowCommand,
-    ControllerManager& controllerManager
+    ControllerManager& controller
 )
 : window(window)
 , font(font)
 , sceneManager(sceneManager)
 , windowCommand(windowCommand)
-, controllerManager(controllerManager)
+, controller(controller)
 , menu(font)
 {
 }
 
 void MainMenuScene::handleEvent(const sf::Event& event)
 {
-    if (event.type == sf::Event::KeyPressed)
+    if (event.type != sf::Event::KeyPressed)
+        return;
+
+    switch (event.key.code)
     {
-        if (event.key.code == sf::Keyboard::Up)
+        case sf::Keyboard::Up:
             menu.moveUp();
-        else if (event.key.code == sf::Keyboard::Down)
+            break;
+
+        case sf::Keyboard::Down:
             menu.moveDown();
-        else if (event.key.code == sf::Keyboard::Enter)
+            break;
+
+        case sf::Keyboard::Enter:
             menu.confirm();
+            break;
+
+        default:
+            break;
     }
 }
 
 void MainMenuScene::update()
 {
+    controller.update();
     switch (menu.getResult())
     {
     case MainMenuResult::Play:
@@ -45,7 +57,7 @@ void MainMenuScene::update()
                 font,
                 sceneManager,
                 windowCommand,
-                controllerManager
+                controller
             )
         );
         break;
@@ -63,5 +75,7 @@ void MainMenuScene::update()
 
 void MainMenuScene::render(sf::RenderWindow& window)
 {
+    window.setView(window.getDefaultView());
+    menu.updateLayout(window.getView());
     menu.draw(window);
 }

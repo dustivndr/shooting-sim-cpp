@@ -25,7 +25,7 @@ void WindowCommand::recreate(sf::VideoMode mode, sf::Uint32 style)
 
 void WindowCommand::setWindowed()
 {
-    recreate(windowedMode, sf::Style::Default);
+    recreate(windowedMode, sf::Style::Titlebar | sf::Style::Close);
 }
 
 void WindowCommand::setFullscreen()

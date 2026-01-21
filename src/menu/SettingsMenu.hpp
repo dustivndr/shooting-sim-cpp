@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
+#include "MenuView.hpp"
 
 enum class SettingsMenuResult
 {
@@ -14,7 +14,6 @@ enum class SettingsMenuResult
 class SettingsMenu
 {
 public:
-    static constexpr int ITEM_COUNT = 4;
 
     SettingsMenu(sf::Font& font);
 
@@ -27,13 +26,10 @@ public:
 
     void draw(sf::RenderWindow& window);
 
-private:
-    void updateColors();
+    void updateLayout(const sf::View& view_);
 
 private:
-    sf::Text title;
-    sf::Text items[ITEM_COUNT];
-
+    MenuView view;
     int selected = 0;
     SettingsMenuResult result = SettingsMenuResult::None;
 };
