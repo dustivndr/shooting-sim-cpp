@@ -1,11 +1,29 @@
 #include "SceneManager.hpp"
 
-void SceneManager::setScene(std::unique_ptr<Scene> newScene)
+void SceneManager::changeScene(std::unique_ptr<Scene> newScene)
 {
-    current = std::move(newScene);
+    currentScene = std::move(newScene);
 }
 
-Scene* SceneManager::getCurrent()
+void SceneManager::handleEvent(const sf::Event& event)
 {
-    return current.get();
+    if (currentScene)
+        currentScene->handleEvent(event);
+}
+
+void SceneManager::update()
+{
+    if (currentScene)
+        currentScene->update();
+}
+
+void SceneManager::render(sf::RenderWindow& window)
+{
+    if (currentScene)
+        currentScene->render(window);
+}
+
+bool SceneManager::hasScene() const
+{
+    return currentScene != nullptr;
 }

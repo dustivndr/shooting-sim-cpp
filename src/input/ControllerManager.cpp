@@ -24,14 +24,6 @@ void ControllerManager::update()
     confirmNow = false;
     // backNow     = false;
 
-    // Keyboard
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-        menuUpNow = true;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-        menuDownNow = true;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
-        confirmNow = true;
-
     // Read Controller
     if (sf::Joystick::isConnected(id))
     {
@@ -106,10 +98,10 @@ bool ControllerManager::menuConfirmPressed()
     return confirmNow && !confirmPrev;
 }
 
-// bool ControllerManager::menuBackPressed()
-// {
-//     return backNow && !backPrev;
-// }
+bool ControllerManager::menuBackPressed()
+{
+    return backNow && !backPrev;
+}
 
 // float ControllerManager::moveForward() const
 // {

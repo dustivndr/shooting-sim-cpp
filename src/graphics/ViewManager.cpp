@@ -1,15 +1,23 @@
-#include "ViewManager.hpp"
+#include "graphics/ViewManager.hpp"
 
-static sf::View makeLetterboxView(
-    const sf::View& baseView,
-    unsigned winW,
-    unsigned winH)
+ViewManager::ViewManager(unsigned gameWidth, unsigned gameHeight)
+    : view(sf::FloatRect(0.f, 0.f,
+          static_cast<float>(gameWidth),
+          static_cast<float>(gameHeight)))
 {
-    float windowRatio = static_cast<float>(winW) / winH;
-    float viewRatio   = baseView.getSize().x / baseView.getSize().y;
+}
 
-    float sizeX = 1.f, sizeY = 1.f;
-    float posX  = 0.f, posY  = 0.f;
+void ViewManager::update(const sf::Vector2u& windowSize)
+{
+    float windowRatio =
+        static_cast<float>(windowSize.x) / windowSize.y;
+    float viewRatio =
+        view.getSize().x / view.getSize().y;
+
+    float sizeX = 1.f;
+    float sizeY = 1.f;
+    float posX  = 0.f;
+    float posY  = 0.f;
 
     if (windowRatio > viewRatio)
     {
@@ -22,44 +30,10 @@ static sf::View makeLetterboxView(
         posY  = (1.f - sizeY) / 2.f;
     }
 
-    sf::View result = baseView;
-    result.setViewport({ posX, posY, sizeX, sizeY });
-    return result;
+    view.setViewport({ posX, posY, sizeX, sizeY });
 }
 
-ViewManager::ViewManager(unsigned gameWidth, unsigned gameHeight)
-    : gameW(gameWidth), gameH(gameHeight)
-{
-    view.reset(
-        sf::FloatRect(
-            0.f, 0.f,
-            static_cast<float>(gameW),
-            static_cast<float>(gameH)
-        )
-    );
-}
-
-void ViewManager::update(const sf::Vector2u& windowSize)
-{
-    view = makeLetterboxView(
-        sf::View(
-            sf::FloatRect(
-                0.f, 0.f,
-                static_cast<float>(gameW),
-                static_cast<float>(gameH)
-            )
-        ),
-        windowSize.x,
-        windowSize.y
-    );
-}
-
-void ViewManager::apply(sf::RenderWindow& window) const
-{
-    window.setView(view);
-}
-
-sf::View& ViewManager::getView()
+const sf::View& ViewManager::getView() const
 {
     return view;
 }
