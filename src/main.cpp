@@ -27,6 +27,10 @@ int main()
     ViewManager viewManager(800, 600);
     WindowCommand windowCommand(window, viewManager);
 
+    // Ensure the view starts letterboxed at 4:3
+    viewManager.update(window.getSize());
+    window.setView(viewManager.getView());
+
     SceneManager sceneManager;
 
     sceneManager.changeScene(
@@ -46,6 +50,12 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
+
+            if (event.type == sf::Event::Resized)
+            {
+                viewManager.update({ event.size.width, event.size.height });
+                window.setView(viewManager.getView());
+            }
 
             sceneManager.handleEvent(event);
         }

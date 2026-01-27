@@ -116,7 +116,6 @@ void MainMenuScene::update()
 
 void MainMenuScene::render(sf::RenderWindow& window)
 {
-    window.setView(window.getDefaultView());
     menu.updateLayout(window.getView());
     menu.draw(window);
 }

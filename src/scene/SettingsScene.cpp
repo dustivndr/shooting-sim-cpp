@@ -153,7 +153,6 @@ void SettingsScene::update()
 
 void SettingsScene::render(sf::RenderWindow& window)
 {
-    window.setView(window.getDefaultView());
     menu.updateLayout(window.getView());
     menu.draw(window);
 }
