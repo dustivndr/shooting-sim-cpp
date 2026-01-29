@@ -30,10 +30,10 @@ void WindowCommand::setWindowed()
 
 void WindowCommand::setFullscreen()
 {
-    recreate(desktopMode, sf::Style::Fullscreen);
+    recreate(desktopMode, sf::Style::Titlebar | sf::Style::Close);
 }
 
 void WindowCommand::setBorderless()
 {
-    recreate(desktopMode, sf::Style::None);
+    recreate(desktopMode, sf::Style::Fullscreen);
 }
