@@ -61,8 +61,8 @@ void ControllerManager::update()
             //     menuDownNow = true;
         }
 
-        // Confirm X
-        if (sf::Joystick::isButtonPressed(id, 3)) // X
+        // Confirm A btn
+        if (sf::Joystick::isButtonPressed(id, 0))
             confirmNow = true;
 
         // DEBUG: Print all pressed buttons
